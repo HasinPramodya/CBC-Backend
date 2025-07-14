@@ -1,4 +1,5 @@
 import User from "../model/user.model.js";
+import Contact from "../model/contact.model.js";
 import bcrypt, { hashSync } from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -191,4 +192,26 @@ export async function getAllUsers(req, res) {
     });
     }
     
+}
+
+export async function createContact(req, res) {
+
+  const contact = new Contact({
+    name: req.body.name,
+    email: req.body.email,
+    phoneNo: req.body.phone,
+    address: req.body.address,
+    comment: req.body.comment,
+  });
+
+  try {
+    await contact.save();
+    res.status(201).json({
+      message: "Contact Created Successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Contact can not Created Successfully",
+    });
+  }
 }
