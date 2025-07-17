@@ -50,6 +50,7 @@ export async function getAllProducts(req, res) {
 }
 
 export async function searchProduct(req, res) {
+  const search = req.params.id;
   if (req.user == null) {
     res.json({
       message: "You need to Login first",
@@ -58,17 +59,21 @@ export async function searchProduct(req, res) {
   }
 
   try {
-    const product = await Product.findOne({
-      productId: req.params.id,
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { altNames: { $elemMatch: { $regex: search, $options: "i" } } },
+      ],
     });
     res.json({
-      product,
+      products: products,
     });
   } catch (err) {
     res.json({
       message: "Can not find the product",
     });
   }
+  return;
 }
 
 export async function deleteProduct(req, res) {
@@ -126,4 +131,10 @@ try{
     });
 }
 }
+
+
+
+
+
+
  
