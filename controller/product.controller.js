@@ -132,7 +132,32 @@ try{
 }
 }
 
+export async function getProductById(req, res) {
+    if (req.user == null) {
+        res.json({
+        message: "You need to Login first",
+        });
+        return;
+    }
+   try{
+     const product = await Product.findOne({
+       productId: req.params.id,
+     });
+     if(product !=null){
+        res.json({
+            product: product,
+        });
 
+     }
+   }catch(error){
+        console.log(error.message);
+        res.json({
+        message: error.message,
+        });
+
+   }
+
+}
 
 
 
