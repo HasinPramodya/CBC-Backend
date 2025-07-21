@@ -31,12 +31,7 @@ export async function createProduct(req, res) {
 }
 
 export async function getAllProducts(req, res) {
-  if (req.user == null) {
-    res.status(401).json({
-      message: "You need to Login first",
-    });
-    return;
-  }
+
   try {
     const products = await Product.find();
     res.status(200).json({
