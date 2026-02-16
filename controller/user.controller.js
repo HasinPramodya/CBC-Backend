@@ -5,31 +5,31 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import axios from "axios";
 import nodemailer from "nodemailer";
-import {OTP} from "../model/otp.model.js";
+import { OTP } from "../model/otp.model.js";
 
 dotenv.config();
 
 const transport = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: "pramodyahasin@gmail.com",
-        pass: "haui djhq agds arxz",
-    }
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "pramodyahasin@gmail.com",
+    pass: "haui djhq agds arxz",
+  }
 })
 
 export async function createUser(req, res) {
   if (req.body.userType == "admin") {
     if (req.user == null) {
-      res.status(401).json()({
+      res.status(401).json({
         message: "plesae Login as an Admin",
       });
       return;
     }
     if (req.user.userType !== "admin") {
-      res.status(403).json()({
+      res.status(403).json({
         message: "You are not authoroized to add admin account",
       });
       return;
@@ -188,23 +188,23 @@ export async function getAllUsers(req, res) {
     return;
   }
   if (req.user.userType !== "admin") {
-      res.status(403).json()({
-        message: "You are not authoroized to add admin account",
-      });
-      return;
-    }
+    res.status(403).json()({
+      message: "You are not authoroized to add admin account",
+    });
+    return;
+  }
 
-    try{
-       const users = await User.find()
-       res.status(200).json({
-        users : users
-       })
-    }catch(err){
-      res.status(500).json({
+  try {
+    const users = await User.find()
+    res.status(200).json({
+      users: users
+    })
+  } catch (err) {
+    res.status(500).json({
       message: "Failed to get all users",
     });
-    }
-    
+  }
+
 }
 
 export async function createContact(req, res) {
@@ -241,15 +241,15 @@ export async function sendOTP(req, res) {
   };
 
   const newOtp = new OTP(
-      {
-        email: email,
-        otp: otp,
-      }
+    {
+      email: email,
+      otp: otp,
+    }
   );
-  try{
-    await  newOtp.save();
+  try {
+    await newOtp.save();
     console.log("OTP saved successfully");
-  }catch(err){
+  } catch (err) {
     console.log("Failed to save OTP", err);
   }
 
@@ -270,22 +270,22 @@ export async function sendOTP(req, res) {
   });
 }
 
-export async function changePassword(req,res){
-    const email = req.body.email;
-    const newPassword = req.body.newPassword;
-    const otp = req.body.otp
+export async function changePassword(req, res) {
+  const email = req.body.email;
+  const newPassword = req.body.newPassword;
+  const otp = req.body.otp
 
-  try{
+  try {
     const lastOtp = await OTP.findOne(
-        {email: email}
-    ).sort({createdAt: -1})
-    if(lastOtp == null){
+      { email: email }
+    ).sort({ createdAt: -1 })
+    if (lastOtp == null) {
       res.status(400).json({
         message: "Invalid OTP",
       });
       return;
     }
-    if(lastOtp.otp != otp){
+    if (lastOtp.otp != otp) {
       res.status(400).json({
         message: "Invalid OTP",
       });
@@ -294,16 +294,16 @@ export async function changePassword(req,res){
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
     await User.updateOne(
-        { email: email },
-        { password: hashedPassword }
+      { email: email },
+      { password: hashedPassword }
     )
     await OTP.deleteMany({
-      email : email
+      email: email
     })
     res.json({
-      message : "Password changed successfully"
+      message: "Password changed successfully"
     })
-  }catch(err){
+  } catch (err) {
     console.log(err);
     res.status(500).json({
       message: "Failed to find OTP & change password",
