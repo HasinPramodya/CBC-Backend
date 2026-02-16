@@ -14,6 +14,17 @@ const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors());
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(authUser)
+app.use('/api/user', userRouter);
+app.use('/api/product', productRouter);
+app.use('/api/order', orderRouter)
+
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+})
+
 mongoose
   .connect(
     process.env.MONGODB_URL
@@ -29,10 +40,5 @@ mongoose
   });
 
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(authUser)
-app.use('/api/user', userRouter);
-app.use('/api/product', productRouter);
-app.use('/api/order', orderRouter)
+
 
