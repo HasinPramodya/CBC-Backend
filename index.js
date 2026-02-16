@@ -12,7 +12,19 @@ dotenv.config()
 
 const port = process.env.PORT || 5000;
 const app = express();
-app.use(cors());
+
+// Configure CORS to allow requests from your Vercel frontend
+const corsOptions = {
+  origin: [
+    'https://cbc-frontend-lemon.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
