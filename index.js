@@ -15,15 +15,27 @@ const app = express();
 
 // Configure CORS to allow requests from your Vercel frontend
 const corsOptions = {
-  origin: [
-    'https://cbc-frontend-lemon.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://cbc-frontend-lemon.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 };
 
+// IMPORTANT: CORS must be applied BEFORE other middleware
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json())
