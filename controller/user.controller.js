@@ -35,6 +35,12 @@ export async function createUser(req, res) {
       return;
     }
   }
+  if (!req.body.password) {
+    res.status(400).json({
+      message: "Password is required",
+    });
+    return;
+  }
   const hashPassword = bcrypt.hashSync(req.body.password, 10);
 
   const user = new User({
@@ -288,6 +294,12 @@ export async function changePassword(req, res) {
     if (lastOtp.otp != otp) {
       res.status(400).json({
         message: "Invalid OTP",
+      });
+      return;
+    }
+    if (!newPassword) {
+      res.status(400).json({
+        message: "New password is required",
       });
       return;
     }
