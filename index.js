@@ -18,6 +18,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       'https://cbc-frontend-lemon.vercel.app',
+      'https://cbc-backend-production.up.railway.app', // Update with your actual Railway URL if known
       'http://localhost:5173',
       'http://localhost:3000'
     ];
@@ -40,14 +41,17 @@ app.use(cors(corsOptions));
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+// Health Check (Must be BEFORE auth middleware for Railway)
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+})
+
 app.use(authUser)
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
 app.use('/api/order', orderRouter)
 
-app.get("/", (req, res) => {
-  res.send("Backend is running!");
-})
+
 
 mongoose
   .connect(
